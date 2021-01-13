@@ -179,7 +179,7 @@ func run() int {
 	}
 
 	var (
-		configFile      = kingpin.Flag("config.file", "Alertmanager configuration file name.").Default("alertmanager.yml").String()
+		configFile      = kingpin.Flag("config.consul", "Prometheus configuration consul host.").Default("http://127.0.0.1:8500/v1/kv/alertmanager").String()
 		dataDir         = kingpin.Flag("storage.path", "Base path for data storage.").Default("data/").String()
 		retention       = kingpin.Flag("data.retention", "How long to keep data for.").Default("120h").Duration()
 		alertGCInterval = kingpin.Flag("alerts.gc-interval", "Interval between alert GC.").Default("30m").Duration()

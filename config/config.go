@@ -14,10 +14,11 @@
 package config
 
 import (
+	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
+	"net/http"
 	"net/url"
 	"path/filepath"
 	"regexp"
@@ -163,6 +164,36 @@ func (s *SecretURL) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, (*URL)(s))
 }
 
+func GetConsulPromConfig(consulurl string) ([]byte, error) {
+	var target []map[string]interface{}
+
+	request, err := http.NewRequest(http.MethodGet, consulurl, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	client := &http.Client{
+		Timeout: time.Second * 10,
+	}
+	resp, err := client.Do(request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	json.NewDecoder(resp.Body).Decode(&target)
+
+	if v, ok := target[0]["Value"]; ok {
+		sDec, _ := b64.StdEncoding.DecodeString(v.(string))
+		return sDec, nil
+
+	} else {
+		return nil, errors.New("Key Doesn't Exist")
+	}
+}
+
 // Load parses the YAML input s into a Config.
 func Load(s string) (*Config, error) {
 	cfg := &Config{}
@@ -188,7 +219,8 @@ func Load(s string) (*Config, error) {
 
 // LoadFile parses the given YAML file into a Config.
 func LoadFile(filename string) (*Config, error) {
-	content, err := ioutil.ReadFile(filename)
+	//content, err := ioutil.ReadFile(filename)
+	content, err := GetConsulPromConfig(filename)
 	if err != nil {
 		return nil, err
 	}

@@ -1,3 +1,8 @@
+# New Build
+```bash
+make build docker DOCKER_ARCHS=amd64 GOOS=linux DOCKER_IMAGE_TAG=v0.21.1
+```
+
 # Alertmanager [![CircleCI](https://circleci.com/gh/prometheus/alertmanager/tree/master.svg?style=shield)][circleci]
 
 [![Docker Repository on Quay](https://quay.io/repository/prometheus/alertmanager/status "Docker Repository on Quay")][quay]
